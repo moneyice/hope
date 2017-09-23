@@ -1,0 +1,20 @@
+server:
+  port: 8003
+spring:
+  application:
+    name: analyzer-microservice    # 项目名称尽量用小写
+#  boot:
+#    admin:
+#      url: http://localhost:8090
+logging:
+      file: analyzer.log
+      level:
+        root: INFO
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/    # 指定注册中心的地址
+netflix:
+  metrics:
+    servo:
+      cacheWarningThreshold: 2000

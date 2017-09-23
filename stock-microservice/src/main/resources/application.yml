@@ -1,0 +1,41 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: stock-microservice
+#  boot:
+#    admin:
+#      url: http://localhost:8090
+  datasource:                           # 指定数据源
+      platform: h2                 # 指定数据源类型
+      type: com.zaxxer.hikari.HikariDataSource
+      #schema: classpath:schema.sql        # 指定h2数据库的建表脚本
+      #data: classpath:data.sql            # 指定h2数据库的insert脚本
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://money.qianyitian.com:3306/xxx?zeroDateTimeBehavior=convertToNull&amp;useUnicode=true&amp;characterEncoding=UTF-8
+      username: root
+      password: pwd
+  redis:
+      database: 0
+      host: localhost
+      port: 6666
+      password: pwd
+      timeout: 0
+      pool:
+          max-active: 8
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+
+mybatis:
+  type-aliases-package: hope.stock.model
+
+logging:
+  file: stock.log
+  level:
+    root: INFO
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/    # 指定注册中心的地址

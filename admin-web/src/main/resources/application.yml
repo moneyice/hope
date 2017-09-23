@@ -1,0 +1,9 @@
+server:
+  port: 8090
+
+spring:
+  application:
+      name: Spring Boot Admin Web
+  boot:
+      admin:
+        url: c

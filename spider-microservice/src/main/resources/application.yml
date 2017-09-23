@@ -1,0 +1,18 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: spider-microservice    # 项目名称尽量用小写
+#  boot:
+#    admin:
+#      url: http://localhost:8090
+logging:
+  file: spider.log
+  level:
+    root: INFO
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/    # 指定注册中心的地址
+#  instance:
+#    preferIpAddress: false
