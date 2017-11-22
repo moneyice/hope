@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/admin-web/admin-web.iml" filepath="$PROJECT_DIR$/admin-web/admin-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/analyzer-microservice/analyzer-microservice.iml" filepath="$PROJECT_DIR$/analyzer-microservice/analyzer-microservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config/config.iml" filepath="$PROJECT_DIR$/config/config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/discovery/discovery.iml" filepath="$PROJECT_DIR$/discovery/discovery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/hope2github.iml" filepath="$PROJECT_DIR$/.idea/hope2github.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spider-microservice/spider-microservice.iml" filepath="$PROJECT_DIR$/spider-microservice/spider-microservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stock-microservice/stock-microservice.iml" filepath="$PROJECT_DIR$/stock-microservice/stock-microservice.iml" />
     </modules>
   </component>
 </project>
