@@ -3,6 +3,7 @@ package hope.analyzer.service;
 import com.alibaba.fastjson.JSON;
 import hope.analyzer.analyzer.IStockAnalyzer;
 import hope.analyzer.model.*;
+import hope.analyzer.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,10 +107,12 @@ public class StockSelectService {
         for (IStockAnalyzer analyzer : analyzers) {
             if (!analyzer.analyze(resultInfo, stock)) {
                 resultInfo = null;
-                break;
+                return resultInfo;
             }
         }
-
+        //get stock url
+        //http://quotes.money.163.com/0601899.html
+        resultInfo.setUrl(Utils.convert163StockURL(stock.getCode()));
         return resultInfo;
     }
 

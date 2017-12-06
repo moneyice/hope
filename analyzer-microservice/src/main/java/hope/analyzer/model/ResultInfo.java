@@ -6,8 +6,21 @@ public class ResultInfo {
     //Stock stock;
 
     String msg = "";
+    String url;
 
-//    public Stock getStock() {
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    //    public Stock getStock() {
 //        return stock;
 //    }
 //

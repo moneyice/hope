@@ -86,5 +86,17 @@ public class Utils {
         return result;
     }
 
+    private static String STOCK_URL_TEMPLATE_163="http://quotes.money.163.com/{0}.html";
+    public static String convert163StockURL(String code){
+        //http://quotes.money.163.com/0600188.html
+        //http://quotes.money.163.com/1002024.html
+        if(code.startsWith("6")){
+            code="0".concat(code);
+        }else{
+            code="1".concat(code);
+        }
+       return MessageFormat.format("STOCK_URL_TEMPLATE_163", code);
+    }
+
 
 }
