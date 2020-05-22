@@ -10,6 +10,15 @@ public class KLineInfo implements Serializable {
     double low;
     LocalDate date;
     double turnoverRate;
+    double changePercent;
+
+    public double getChangePercent() {
+        return changePercent;
+    }
+
+    public void setChangePercent(double changePercent) {
+        this.changePercent = changePercent;
+    }
 
     public double getTurnoverRate() {
         return turnoverRate;

@@ -10,12 +10,12 @@ import java.util.List;
 //n天之内某一天成交量是前一天的  x 倍
 public class SuddentHighVolumeLiteAnalyzer extends SuddentHighVolumeAnalyzer {
 
-    String descTemplate = "在2个工作日内，发生过1次成交量是前一天的2.5倍,换手率大于";
+    String descTemplate = "在2个工作日内，发生过1次成交量是前一天的2.4倍,换手大于1.2%,涨幅大于0";
 
     public SuddentHighVolumeLiteAnalyzer() {
         setDaysToNow("3");
         setOccurTimes("1");
-        setVolumeIncrease("2.5");
+        setVolumeIncrease("2.4");
     }
 
 
@@ -33,7 +33,7 @@ public class SuddentHighVolumeLiteAnalyzer extends SuddentHighVolumeAnalyzer {
             KLineInfo compare = infos.get(i - 1);
             double actualVolumeIncrease = ((double) toCheck.getTurnoverRate() / compare.getTurnoverRate());
             actualVolumeIncrease = Utils.get2Double(actualVolumeIncrease);
-            if (actualVolumeIncrease >= volumeIncrease) {
+            if (actualVolumeIncrease >= volumeIncrease&&toCheck.getTurnoverRate()>1.2&&toCheck.getClose()>toCheck.getOpen()) {
                 actualOccurTimes++;
             }
             if (actualOccurTimes >= occurTimes) {

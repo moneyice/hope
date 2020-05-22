@@ -48,12 +48,12 @@ public class StockSelectService {
     }
 
     public void startAnalyze(String klineType) {
-        logger.info("start analyzing "+ klineType);
+        logger.info("start analyzing "+ klineType +" " +analyzers.get(0).getClass().getName());
         startAnalyzeInSequence(klineType);
         // startAnalyzeInParallel();
 
         long now = System.currentTimeMillis();
-        logger.info("ending analyzing "+ klineType);
+        logger.info("ending analyzing "+ klineType + " "+analyzers.get(0).getClass().getName());
     }
     public Stock testJson() {
         Stock stock = getStock("000001", "daily");

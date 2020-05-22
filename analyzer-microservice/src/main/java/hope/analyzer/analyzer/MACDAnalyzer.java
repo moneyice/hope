@@ -1,15 +1,13 @@
 package hope.analyzer.analyzer;
 
 import hope.analyzer.model.KLineInfo;
-import hope.analyzer.model.Macd;
 import hope.analyzer.model.ResultInfo;
 import hope.analyzer.model.Stock;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class MACDAnalyzer extends AbstractStockAnalyzer {
-    private static float TURNOVER_RATE_THRESHHOLD = 1.0f ;
+
     private static int SHORT = 12;
     private static int LONG = 26;
     private static int M = 9;
@@ -42,7 +40,9 @@ public class MACDAnalyzer extends AbstractStockAnalyzer {
             todayMACDThreshhold=0.12;
         }
 
-        if (macdToday>0&&macdToday<=todayMACDThreshhold&&macdYesterday<=macdToday&& latestTurnoverRate>=TURNOVER_RATE_THRESHHOLD) {
+        if (macdToday>0&&macdToday<=todayMACDThreshhold&&macdYesterday<=macdToday&& latestTurnoverRate>=2.0) {
+//            String msg = format(stock);
+//            resultInfo.appendMessage(msg);
             ok = true;
         }
         return ok;
@@ -56,7 +56,7 @@ public class MACDAnalyzer extends AbstractStockAnalyzer {
     }
 
     public String getDescription() {
-        return "MACD 介于0和0.1之间，且大于前一天的值，换手率大于"+TURNOVER_RATE_THRESHHOLD+"%";
+        return "MACD 介于0和0.1之间，且大于前一天的值，换手率大于2%";
     }
 
     public int getDaysToNow() {

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import hope.analyzer.analyzer.EStockAnalyzer;
 import hope.analyzer.analyzer.IStockAnalyzer;
 import hope.analyzer.analyzer.StockAnalyzerFacotry;
+import hope.analyzer.dao.ReportDAO4Redis;
 import hope.analyzer.model.AnalyzeResult;
 import hope.analyzer.model.ResultInfo;
 import hope.analyzer.model.Stock;
@@ -27,8 +28,12 @@ import java.util.List;
 @RestController
 public class AnalysisController {
     private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private ReportDAO4Redis reportDAO4Redis;
 
     @Autowired
     private AliyunOSSStorageService aliyunOSSStorageService;
@@ -40,29 +45,29 @@ public class AnalysisController {
     @RequestMapping(value = "/startAnalyze", method = RequestMethod.GET)
     public void startAnalyzeInBackgroud() {
         for (EStockAnalyzer enumAnalyzer:EStockAnalyzer.values()){
-            IStockAnalyzer analyzer = StockAnalyzerFacotry.createStockAnalyzer(enumAnalyzer);
-            StockSelectService hs = new StockSelectService(restTemplate);
-            hs.addAnalyzer(analyzer);
-            hs.startAnalyze("dailylite");
-            AnalyzeResult result = hs.getAnalyzeResult();
-            storeAnalysisResult(result,enumAnalyzer,"daily");
+            analyze(enumAnalyzer,"dailylite","daily");
         }
-
         {
-        IStockAnalyzer analyzer = StockAnalyzerFacotry.createStockAnalyzer(EStockAnalyzer.MACD);
+            analyze(EStockAnalyzer.MACD,"weekly");
+            analyze(EStockAnalyzer.MACD,"monthly");
+        }
+        {
+            analyze(EStockAnalyzer.MACDAdvance,"weekly");
+            analyze(EStockAnalyzer.MACDAdvance,"monthly");
+        }
+    }
+
+    private void analyze(EStockAnalyzer macd,String kLineType) {
+        analyze(macd,kLineType,kLineType);
+    }
+
+    private void analyze(EStockAnalyzer macd,String retreivalKLineType,String storageKlineType) {
+        IStockAnalyzer analyzer = StockAnalyzerFacotry.createStockAnalyzer(macd);
         StockSelectService hs = new StockSelectService(restTemplate);
         hs.addAnalyzer(analyzer);
-        hs.startAnalyze("weekly");
+        hs.startAnalyze(retreivalKLineType);
         AnalyzeResult result = hs.getAnalyzeResult();
-        storeAnalysisResult(result,EStockAnalyzer.MACD,"weekly");
-
-        analyzer = StockAnalyzerFacotry.createStockAnalyzer(EStockAnalyzer.MACD);
-        hs = new StockSelectService(restTemplate);
-        hs.addAnalyzer(analyzer);
-        hs.startAnalyze("monthly");
-        result = hs.getAnalyzeResult();
-        storeAnalysisResult(result,EStockAnalyzer.MACD,"monthly");
-        }
+        storeAnalysisResult(result, macd, storageKlineType);
     }
 
     private void storeAnalysisResult(AnalyzeResult result, EStockAnalyzer enumAnalyzer, String type) {
@@ -70,69 +75,40 @@ public class AnalysisController {
         String content= JSON.toJSONString(result);
         aliyunOSSStorageService.put(filename,content );
         logger.info("aliyunOSS storage successful "+ filename);
-        filename=LocalDate.now().toString()+"-"+filename;
-        aliyunOSSStorageService.put(filename,content );
-        logger.info("aliyunOSS storage successful "+ filename);
+
+        String fullFilename=LocalDate.now().toString()+"-"+filename;
+        aliyunOSSStorageService.put(fullFilename,content );
+        logger.info("aliyunOSS storage successful "+ fullFilename);
+
+        //clear cache
+        reportDAO4Redis.clearReport(filename);
     }
 
     @RequestMapping(value = "/analysis/{analyzerName}/daily", method = RequestMethod.GET)
     public String analyze(@PathVariable String analyzerName) {
         String filename=analyzerName+ "-daily";
-        String s=aliyunOSSStorageService.get(filename);
-        return s;
+        return lazyLoadReport(filename);
+    }
+
+    private String lazyLoadReport(String filename) {
+        String report=reportDAO4Redis.getReport(filename);
+        if(report==null){
+            report=aliyunOSSStorageService.get(filename);
+            reportDAO4Redis.storeReport(filename,report);
+        }
+        return report;
     }
 
     @RequestMapping(value = "/analysis/{analyzerName}/weekly", method = RequestMethod.GET)
     public String analyzeByWeekly(@PathVariable String analyzerName) {
         String filename=analyzerName+ "-weekly";
-        String s=aliyunOSSStorageService.get(filename);
-        return s;
+        return lazyLoadReport(filename);
     }
 
     @RequestMapping(value = "/analysis/{analyzerName}/monthly", method = RequestMethod.GET)
     public String analyzeByMonthly(@PathVariable String analyzerName) {
         String filename=analyzerName+ "-monthly";
-        String s=aliyunOSSStorageService.get(filename);
-        return s;
+        return lazyLoadReport(filename);
     }
 
-    @RequestMapping(value = "/test_json", method = RequestMethod.GET)
-    public Stock testJson() {
-        StockSelectService hs = new StockSelectService(restTemplate);
-        Stock stock = hs.testJson();
-        return stock;
-    }
-
-    @RequestMapping(value = "/test_large_json", method = RequestMethod.GET)
-    public void testLargeJson() {
-        SymbolList allSymbols = getAllSymbols();
-        String type="dailylite";
-        int i=0;
-//        for (Stock stock:allSymbols.getSymbols()) {
-//            String code=stock.getCode();
-////            code="300319";
-//            StringBuilder sb=new StringBuilder();
-//            sb.append("http://stock-microservice/data/kline/").append(type).append("/").append(code);
-//            stock=restTemplate.getForObject(sb.toString(), Stock.class);
-////            stock=restTemplate.getForObject("http://stock-microservice/data/kline/"+type+"/"+code, Stock.class);
-//            logger.info( i+" --"+stock.getCode());
-//            i++;
-//        }
-         i=0;
-        for (Stock stock:allSymbols.getSymbols()) {
-            String code=stock.getCode();
-//            code="300319";
-            StringBuilder sb=new StringBuilder();
-            stock.setkLineType("dailylite");
-            sb.append("http://stock-microservice/data/kline/").append(type).append("/").append(code);
-            stock=restTemplate.postForObject("http://stock-microservice/data/kline/", stock,Stock.class);
-//            stock=restTemplate.getForObject("http://stock-microservice/data/kline/"+type+"/"+code, Stock.class);
-            logger.info( i+" --"+stock.getCode());
-            i++;
-        }
-    }
-    private SymbolList getAllSymbols() {
-        SymbolList symbolList = restTemplate.getForObject("http://stock-microservice/stockList", SymbolList.class);
-        return symbolList;
-    }
 }

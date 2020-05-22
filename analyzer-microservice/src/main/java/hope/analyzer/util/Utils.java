@@ -1,5 +1,6 @@
 package hope.analyzer.util;
 
+import java.math.BigDecimal;
 import java.text.*;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
@@ -74,8 +75,8 @@ public class Utils {
 
     // 保留2位小数
     public static double get2Double(double a) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        return new Double(df.format(a).toString());
+        BigDecimal   b   =   new BigDecimal(a);
+        return  b.setScale(2,   BigDecimal.ROUND_DOWN).doubleValue();
     }
 
     public static String double2Percentage(double input) {
@@ -87,16 +88,21 @@ public class Utils {
     }
 
     private static String STOCK_URL_TEMPLATE_163="http://quotes.money.163.com/{0}.html";
+    private static String STOCK_URL_TEMPLATE_10JQKA="http://stockpage.10jqka.com.cn/{0}/";
     public static String convert163StockURL(String code){
-        //http://quotes.money.163.com/0600188.html
-        //http://quotes.money.163.com/1002024.html
-        if(code.startsWith("6")){
-            code="0".concat(code);
-        }else{
-            code="1".concat(code);
-        }
-       return MessageFormat.format("STOCK_URL_TEMPLATE_163", code);
+//        //http://quotes.money.163.com/0600188.html
+//        //http://quotes.money.163.com/1002024.html
+//        if(code.startsWith("6")){
+//            code="0".concat(code);
+//        }else{
+//            code="1".concat(code);
+//        }
+       return MessageFormat.format(STOCK_URL_TEMPLATE_10JQKA, code);
     }
 
+    public static String calcRange(double base, double value){
+       double result= (value-base)/base  * 100;
+       return String.format("%.2f", result)+"%";
+    }
 
 }

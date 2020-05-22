@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
+import static java.lang.System.out;
+
 
 public class IPOAnalyzer extends AbstractStockAnalyzer {
     public final static long MONTH = 10;
@@ -16,7 +18,6 @@ public class IPOAnalyzer extends AbstractStockAnalyzer {
 
     public IPOAnalyzer() {
     }
-
 
     public boolean analyze(ResultInfo resultInfo, Stock stock) {
         boolean ok = false;
@@ -27,7 +28,7 @@ public class IPOAnalyzer extends AbstractStockAnalyzer {
         LocalDate localDate = LocalDate.now();
         Period period = Period.between(infos.get(0).getDate(), localDate);
 
-        if (period.getMonths() >= MONTH ){
+        if (period.getYears()*12+period.getMonths() >= MONTH ){
             return ok;
         }
 

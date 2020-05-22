@@ -19,8 +19,6 @@ import java.util.Date;
 @RestController
 public class ScheduledController {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
-            "HH:mm:ss");
 
     @Resource(name = "stockInfoSpider")
     private StockInfoSpider stockInfoSpider = null;

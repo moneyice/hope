@@ -6,7 +6,7 @@ import hope.stock.controller.ConfigClient;
 import hope.stock.model.KLineInfo;
 import hope.stock.model.Stock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
+//import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -18,7 +18,7 @@ import java.util.List;
 
 
 @Repository("stockDAO4FileSystem")
-@RefreshScope
+//@RefreshScope
 public class StockDAO4FileSystem implements IStockDAO {
     public static final String DAILY_LITE_FILE_SUFFIX = "."+IStockDAO.TYPE_DAILY_LITE;
     public static final String WEEKLY_FILE_SUFFIX = "."+IStockDAO.TYPE_WEEKLY;
@@ -35,6 +35,7 @@ public class StockDAO4FileSystem implements IStockDAO {
         return configClient.getStockRepositoryPath();
     }
 
+    @Override
     public void storeAllSymbols(List<Stock> list) {
         File rootFolder = new File(getRootPath());
         if (!rootFolder.exists()) {
@@ -49,6 +50,7 @@ public class StockDAO4FileSystem implements IStockDAO {
         }
     }
 
+    @Override
     public void storeStock(Stock stock) {
         String jsonStock = JSON.toJSONString(stock);
         File to = new File(getRootPath()+IStockDAO.TYPE_DAILY, stock.getCode());
@@ -58,6 +60,7 @@ public class StockDAO4FileSystem implements IStockDAO {
             e.printStackTrace();
         }
     }
+    @Override
     public void storeStockLite(Stock stock) {
         List<KLineInfo> oldArray = stock.getkLineInfos();
 
@@ -97,6 +100,7 @@ public class StockDAO4FileSystem implements IStockDAO {
         }
     }
 
+    @Override
     public Stock getStock(String code) {
         File from = new File(getRootPath()+IStockDAO.TYPE_DAILY, code);
         String rs;
@@ -157,6 +161,7 @@ public class StockDAO4FileSystem implements IStockDAO {
     }
 
 
+    @Override
     public List<Stock> getAllSymbols() {
         File rootFolder = new File(getRootPath());
         if (!rootFolder.exists()) {
@@ -177,6 +182,7 @@ public class StockDAO4FileSystem implements IStockDAO {
         return null;
     }
 
+    @Override
     public Date getStockUpdateTime(String code) {
         File file = new File(getRootPath(), code);
         long time = file.lastModified();
@@ -184,6 +190,8 @@ public class StockDAO4FileSystem implements IStockDAO {
         return lastDate;
     }
 
+
+    @Override
     public Date getAllSymbolsUpdateTime() {
         File file = new File(getRootPath(), "allSymbols");
         long time = file.lastModified();

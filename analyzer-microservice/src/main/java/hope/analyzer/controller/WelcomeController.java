@@ -16,5 +16,4 @@ public class WelcomeController {
 		model.put("message", this.message);
 		return "welcome";
 	}
-
 }

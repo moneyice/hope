@@ -6,7 +6,7 @@ package hope.spider.job;
 public class StockFilter {
     public boolean select(String code) {
         boolean result = false;
-        if (code.startsWith("0") || code.startsWith("6") || code.startsWith("3")) {
+        if (code.startsWith("00") || code.startsWith("60") || code.startsWith("30")) {
             result = true;
         }
         return result;

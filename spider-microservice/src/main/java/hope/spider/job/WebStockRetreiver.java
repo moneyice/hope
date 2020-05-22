@@ -16,8 +16,9 @@ import java.util.List;
 
 public abstract class WebStockRetreiver implements IStockRetreiver {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    String codeListHTML = "http://quote.eastmoney.com/stocklist.html";
+    String codeListHTML = "http://quote.eastmoney.com/stock_list.html";
 
+    @Override
     public List<Stock> getAllStockSymbols() throws IOException {
         List<Stock> list = new ArrayList<Stock>();
         Document doc = Jsoup.connect(codeListHTML).get();

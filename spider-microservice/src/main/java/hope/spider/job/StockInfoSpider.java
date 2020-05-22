@@ -4,6 +4,7 @@ package hope.spider.job;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hope.spider.model.EIndex;
 import hope.spider.model.Stock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -64,20 +66,42 @@ public class StockInfoSpider {
             storeAllSymbols(stockSymbols);
 
             logger.info("==============================需要更新 " + new Date());
-            for (Stock stock : stockSymbols) {
-                String code = stock.getCode();
-                if (code.startsWith("0") || code.startsWith("3")
-                        || code.startsWith("6")) {
-                    String stockJsonString=JSON.toJSONString(stock);
-                    Stock newCopy=JSON.parseObject(stockJsonString,Stock.class);
-                    Stock info = stockRetreiver.getStockInfo(newCopy);
-                    storeStock(info);
-                }
-            }
+            syncStockData(stockSymbols);
+            syncIndexData();
+
             lastUpdateTime = new Date();
             startAnalyze();
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+
+    private void syncIndexData() {
+        for (EIndex eIndex : EIndex.values()) {
+            Stock stock = new Stock();
+            stock.setCode(eIndex.getCode());
+            stock.setName(eIndex.getName());
+            stock.setMarket(eIndex.getMarket());
+
+            try {
+                Stock info = stockRetreiver.getStockInfo(stock);
+                storeIndex(info);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    private void syncStockData(List<Stock> stockSymbols) {
+        for (Stock stock : stockSymbols) {
+            String code = stock.getCode();
+            try {
+                Stock info = stockRetreiver.getStockInfo(stock);
+                storeStock(info);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -86,10 +110,17 @@ public class StockInfoSpider {
         logger.info("trigger start analyzing ");
     }
 
+    private void storeIndex(Stock info) {
+        info.setCode("i" + info.getCode());
+        restTemplate.postForObject("http://stock-microservice/stock", info, Stock.class);
+        logger.info("saved stock " + info.getCode());
+    }
+
     private void storeStock(Stock info) {
         restTemplate.postForObject("http://stock-microservice/stock", info, Stock.class);
-        logger.info("saved stock "+info.getCode());
+        logger.info("saved stock " + info.getCode());
     }
+
 
     private void storeAllSymbols(List<Stock> stockSymbols) {
         restTemplate.postForObject("http://stock-microservice/stockList", stockSymbols, List.class);

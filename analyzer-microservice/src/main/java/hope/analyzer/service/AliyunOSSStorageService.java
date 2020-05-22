@@ -20,8 +20,8 @@ public class AliyunOSSStorageService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static String endpoint = "oss-cn-zhangjiakou.aliyuncs.com";
-    private static String accessKeyId = "youraccessKeyId";
-    private static String accessKeySecret = "youraccessKeySecret";
+    private static String accessKeyId = "y3y3mL89zT4N0YUR";
+    private static String accessKeySecret = "Ub25yu6ymY0CJ0LQ7J0c09ZtuYoI1o";
     private static String bucketName = "hhope";
     private static String key = "samplekey";
     private  OSSClient ossClient;
