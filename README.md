@@ -11,3 +11,5 @@ analyzer-microservice   分析数据，生成报表
 
 存储使用Redis, 同时提供了Mysql, 文件系统 的备用方案。
 报表生成后存放在阿里云OSS
+
+
